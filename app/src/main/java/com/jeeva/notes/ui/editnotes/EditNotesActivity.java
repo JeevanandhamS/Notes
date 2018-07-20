@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.jeeva.notes.R;
@@ -64,17 +66,30 @@ public class EditNotesActivity extends AppCompatActivity implements HasSupportFr
 
         Note note = unBundleNote();
 
-        if(null != note) {
+        if (null != note) {
             mEtContent.setText(note.getContent());
             mEditNotesViewModel.setNote(note);
         } else {
             mEditNotesViewModel.addNote("");
         }
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private Note unBundleNote() {
         Bundle bundle = getIntent().getExtras();
-        if(null != bundle && bundle.containsKey(NOTE_DATA_KEY)) {
+        if (null != bundle && bundle.containsKey(NOTE_DATA_KEY)) {
             return (Note) bundle.getSerializable(NOTE_DATA_KEY);
         }
 
@@ -86,7 +101,7 @@ public class EditNotesActivity extends AppCompatActivity implements HasSupportFr
         super.onDestroy();
 
         String content = mEtContent.getText().toString();
-        if(TextUtils.isEmpty(content)) {
+        if (TextUtils.isEmpty(content)) {
             mNotesListViewModel.deleteNote(mEditNotesViewModel.getNote());
         } else {
             mEditNotesViewModel.updateNote(content);
